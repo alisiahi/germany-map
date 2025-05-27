@@ -9,13 +9,13 @@ const App = () => {
 
   return (
     <div className="grid grid-cols-5 h-screen w-screen">
-      <div className="col-span-1 bg-blue-200">
+      <div className="col-span-1 bg-gray-800">
         <LeftSidebar selected={colorVariable} onChange={setColorVariable} />
       </div>
       <div className="col-span-2">
         <MapView colorVariable={colorVariable} />
       </div>
-      <div className="col-span-2 bg-blue-200">
+      <div className="col-span-2 bg-gray-800">
         <RightSidebar colorVariable={colorVariable} />
       </div>
     </div>

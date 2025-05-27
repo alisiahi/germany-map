@@ -42,7 +42,7 @@ const RightSidebar: React.FC<{ colorVariable: string }> = ({
     <div className="p-4">
       {selectedKreis ? (
         <div className="flex flex-col h-screen">
-          <p className="mb-4 text-blue-800">
+          <p className="mb-4 text-gray-300">
             <strong>Selected Kreis:</strong> {selectedKreis.gen}
           </p>
 
@@ -55,7 +55,7 @@ const RightSidebar: React.FC<{ colorVariable: string }> = ({
                     cx="50%"
                     cy="50%"
                     label
-                    outerRadius={150}
+                    outerRadius={180}
                     fill="#8884d8"
                     dataKey="value"
                   >

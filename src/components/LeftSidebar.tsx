@@ -6,16 +6,16 @@ export default function LeftSidebar({ selected, onChange }) {
 
   return (
     <div className="p-4">
-      <h2 className="font-bold mb-2 text-blue-800">Select Question</h2>
+      <h2 className="font-bold mb-2 text-gray-300">Select Question</h2>
       <ul className="space-y-2">
         {options.map((opt) => (
           <li
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`cursor-pointer px-3 py-2 rounded-full text-blue-800 border border-blue-700 ${
+            className={`cursor-pointer px-3 py-2 rounded-full text-gray-300 border border-gray-700 ${
               selected === opt.value
-                ? "bg-blue-500 text-white shadow-xs shadow-blue-800"
-                : "hover:bg-gray-300"
+                ? "bg-gray-500 text-white shadow-xs shadow-gray-800"
+                : "hover:bg-gray-400"
             }`}
           >
             {opt.label}
