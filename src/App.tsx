@@ -16,7 +16,7 @@ const App = () => {
         <MapView colorVariable={colorVariable} />
       </div>
       <div className="col-span-2 bg-gray-800">
-        <RightSidebar colorVariable={colorVariable} />
+        {/* <RightSidebar colorVariable={colorVariable} /> */}
       </div>
     </div>
   );

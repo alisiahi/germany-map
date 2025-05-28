@@ -27,10 +27,10 @@ const RightSidebar: React.FC<{ colorVariable: string }> = ({
     if (!selectedKreis || !colorVariable || !kreiseData) return null;
 
     const selectedAGS = selectedKreis.ags;
-    const bundeslandCode = selectedAGS.slice(0, 2);
+    const bundeslandCode = selectedAGS.slice(0, 4);
 
     return kreiseData
-      .filter((row) => row.AGS.slice(0, 2) === bundeslandCode)
+      .filter((row) => row.AGS.slice(0, 4) === bundeslandCode)
       .map((row) => ({
         name: row.GEN,
         value: Number(row[colorVariable] as string) || 0,

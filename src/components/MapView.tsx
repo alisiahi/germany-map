@@ -101,12 +101,22 @@ export default function MapView({ colorVariable }) {
         sticky: true,
       });
 
-      layer.on("click", () => {
+      layer.on("click", (e) => {
         const current = useSelectionStore.getState().selectedKreis;
         if (current && current.ags === ags) {
-          useSelectionStore.getState().clearSelectedKreis(); // Deselect if already selected
+          useSelectionStore.getState().clearSelectedKreis();
+          layer.closePopup();
         } else {
-          setSelectedKreis({ ags, gen: name }); // Select new one
+          setSelectedKreis({ ags, gen: name });
+
+          const valueText =
+            row && row[colorVariable] !== undefined
+              ? `${colorVariable}: ${row[colorVariable]}`
+              : "No data";
+
+          layer
+            .bindPopup(`<strong>${name}</strong><br>${valueText}`)
+            .openPopup(e.latlng);
         }
       });
     };
