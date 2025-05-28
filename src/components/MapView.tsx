@@ -4,6 +4,13 @@ import "leaflet/dist/leaflet.css";
 import { csvParse } from "d3-dsv";
 import { useSelectionStore } from "../store/useSelectionStore";
 
+function ZoomListener({ onZoom }) {
+  useMapEvent("zoomend", (e) => {
+    onZoom(e.target.getZoom());
+  });
+  return null;
+}
+
 function getColorFromValue(value, min, max) {
   const t = (value - min) / (max - min);
   const norm = Math.max(0, Math.min(1, t));
@@ -13,29 +20,22 @@ function getColorFromValue(value, min, max) {
   return `rgb(${rgb.join(",")})`;
 }
 
-function ZoomListener({ onZoom }) {
-  useMapEvent("zoomend", (e) => {
-    onZoom(e.target.getZoom());
-  });
-  return null;
-}
-
 export default function MapView({ colorVariable }) {
   const [zoom, setZoom] = useState(6);
-  const [kreisGeo, setKreisGeo] = useState(null);
+  const [gemeindeGeo, setGemeindeGeo] = useState(null);
   const [csvData, setCsvData] = useState({});
   const [valueMinMax, setValueMinMax] = useState(null);
 
   const geoJsonRef = useRef();
-  const selectedKreis = useSelectionStore((s) => s.selectedKreis);
-  const setSelectedKreis = useSelectionStore((s) => s.setSelectedKreis);
+  const selectedGemeinde = useSelectionStore((s) => s.selectedGemeinde);
+  const setSelectedGemeinde = useSelectionStore((s) => s.setSelectedGemeinde);
 
   useEffect(() => {
-    fetch("/kreise.geo.json")
+    fetch("/gemeinde.geo.json")
       .then((res) => res.json())
-      .then((data) => setKreisGeo(data));
+      .then((data) => setGemeindeGeo(data));
 
-    fetch("/kreise_data.csv")
+    fetch("/gemeinde_data.csv")
       .then((res) => res.text())
       .then((text) => {
         const parsed = csvParse(text);
@@ -49,9 +49,9 @@ export default function MapView({ colorVariable }) {
   }, []);
 
   useEffect(() => {
-    if (!kreisGeo || !csvData) return;
+    if (!gemeindeGeo || !csvData) return;
     const values = [];
-    kreisGeo.features.forEach((f) => {
+    gemeindeGeo.features.forEach((f) => {
       const ags = f.properties.AGS;
       const row = csvData[ags];
       if (row && row[colorVariable] !== undefined) {
@@ -62,10 +62,10 @@ export default function MapView({ colorVariable }) {
     if (values.length > 0) {
       setValueMinMax([Math.min(...values), Math.max(...values)]);
     }
-  }, [kreisGeo, csvData, colorVariable]);
+  }, [gemeindeGeo, csvData, colorVariable]);
 
   // Style function using CSV data and selection
-  const geoStyleKreise = (feature) => {
+  const geoStyleGemeinde = (feature) => {
     if (!valueMinMax) return {};
     const ags = feature.properties.AGS;
     const row = csvData[ags];
@@ -76,7 +76,7 @@ export default function MapView({ colorVariable }) {
         color = getColorFromValue(value, valueMinMax[0], valueMinMax[1]);
       }
     }
-    const isSelected = selectedKreis && ags === selectedKreis.ags;
+    const isSelected = selectedGemeinde && ags === selectedGemeinde.ags;
     return {
       color: isSelected ? "#1e40af" : "#fff",
       weight: isSelected ? 3 : 1,
@@ -95,6 +95,7 @@ export default function MapView({ colorVariable }) {
       if (row) {
         tooltip += ` (${colorVariable}: ${row[colorVariable]})`;
       }
+
       layer.bindTooltip(tooltip, {
         permanent: false,
         direction: "top",
@@ -102,12 +103,12 @@ export default function MapView({ colorVariable }) {
       });
 
       layer.on("click", (e) => {
-        const current = useSelectionStore.getState().selectedKreis;
+        const current = useSelectionStore.getState().selectedGemeinde;
         if (current && current.ags === ags) {
-          useSelectionStore.getState().clearSelectedKreis();
+          useSelectionStore.getState().clearSelectedGemeinde();
           layer.closePopup();
         } else {
-          setSelectedKreis({ ags, gen: name });
+          setSelectedGemeinde({ ags, gen: name });
 
           const valueText =
             row && row[colorVariable] !== undefined
@@ -122,16 +123,15 @@ export default function MapView({ colorVariable }) {
     };
   }
 
-  // bringToFront for selected Kreis after render
   useEffect(() => {
-    if (!geoJsonRef.current || !selectedKreis) return;
+    if (!geoJsonRef.current || !selectedGemeinde) return;
 
     const frame = requestAnimationFrame(() => {
       const layers = geoJsonRef.current.getLayers();
       layers.forEach((layer) => {
         if (
           layer.feature &&
-          layer.feature.properties.AGS === selectedKreis.ags &&
+          layer.feature.properties.AGS === selectedGemeinde.ags &&
           layer.bringToFront
         ) {
           layer.bringToFront();
@@ -140,7 +140,7 @@ export default function MapView({ colorVariable }) {
     });
 
     return () => cancelAnimationFrame(frame);
-  }, [selectedKreis, kreisGeo, colorVariable]);
+  }, [selectedGemeinde, gemeindeGeo, colorVariable]);
 
   return (
     <>
@@ -155,12 +155,13 @@ export default function MapView({ colorVariable }) {
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
         />
         <ZoomListener onZoom={setZoom} />
-        {kreisGeo && (
+
+        {gemeindeGeo && (
           <GeoJSON
             key={colorVariable}
-            data={kreisGeo}
-            style={geoStyleKreise}
-            onEachFeature={createOnEachFeature("Kreis")}
+            data={gemeindeGeo}
+            style={geoStyleGemeinde}
+            onEachFeature={createOnEachFeature("Gemeinde")}
             ref={geoJsonRef}
           />
         )}

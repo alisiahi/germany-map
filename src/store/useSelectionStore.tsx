@@ -1,18 +1,18 @@
 import { create } from "zustand";
 
-type SelectedKreis = {
+type SelectedGemeinde = {
   ags: string;
   gen: string;
 } | null;
 
 type SelectionState = {
-  selectedKreis: SelectedKreis;
-  setSelectedKreis: (kreis: SelectedKreis) => void;
-  clearSelectedKreis: () => void;
+  selectedGemeinde: SelectedGemeinde;
+  setSelectedGemeinde: (gemeinde: SelectedGemeinde) => void;
+  clearSelectedGemeinde: () => void;
 };
 
 export const useSelectionStore = create<SelectionState>((set) => ({
-  selectedKreis: null,
-  setSelectedKreis: (kreis) => set({ selectedKreis: kreis }),
-  clearSelectedKreis: () => set({ selectedKreis: null }),
+  selectedGemeinde: null,
+  setSelectedGemeinde: (gemeinde) => set({ selectedGemeinde: gemeinde }),
+  clearSelectedGemeinde: () => set({ selectedGemeinde: null }),
 }));

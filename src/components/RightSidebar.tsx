@@ -4,7 +4,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 import { useSelectionStore } from "../store/useSelectionStore";
 
-import { useKreiseData } from "../utils/useKreiseData";
+import { useGemeindeData } from "../utils/useGemeindeData";
 
 const COLORS = [
   "#0088FE",
@@ -20,30 +20,30 @@ const COLORS = [
 const RightSidebar: React.FC<{ colorVariable: string }> = ({
   colorVariable,
 }) => {
-  const kreiseData = useKreiseData();
-  const selectedKreis = useSelectionStore((s) => s.selectedKreis);
+  const gemeindeData = useGemeindeData();
+  const selectedGemeinde = useSelectionStore((s) => s.selectedGemeinde);
 
   const chartData = useMemo(() => {
-    if (!selectedKreis || !colorVariable || !kreiseData) return null;
+    if (!selectedGemeinde || !colorVariable || !gemeindeData) return null;
 
-    const selectedAGS = selectedKreis.ags;
+    const selectedAGS = selectedGemeinde.ags;
     const bundeslandCode = selectedAGS.slice(0, 4);
 
-    return kreiseData
+    return gemeindeData
       .filter((row) => row.AGS.slice(0, 4) === bundeslandCode)
       .map((row) => ({
         name: row.GEN,
         value: Number(row[colorVariable] as string) || 0,
       }))
       .filter((d) => d.value > 0);
-  }, [selectedKreis, colorVariable, kreiseData]);
+  }, [selectedGemeinde, colorVariable, gemeindeData]);
 
   return (
     <div className="p-4">
-      {selectedKreis ? (
+      {selectedGemeinde ? (
         <div className="flex flex-col h-screen">
           <p className="mb-4 text-gray-300">
-            <strong>Selected Kreis:</strong> {selectedKreis.gen}
+            <strong>Selected Gemeinde:</strong> {selectedGemeinde.gen}
           </p>
 
           {chartData && chartData.length > 0 ? (

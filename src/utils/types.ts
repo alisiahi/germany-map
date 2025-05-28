@@ -1,4 +1,4 @@
-export default interface KreisData {
+export default interface GemeindeData {
   AGS: string;
   GEN: string;
   question_01: string;
